@@ -1,0 +1,81 @@
+# Aligned but Inert: Representational Correspondence Does Not Imply Causal Utility
+
+Reproduction code for the two controlled studies in the paper. Both studies test
+whether a representational correspondence that *provably exists* confers a causal
+or downstream benefit, using the same template: a manipulation/existence check
+that the correspondence is real and captured, matched controls that hold nuisance
+factors fixed, and a decision rule that attributes a benefit only if it beats
+those controls.
+
+```
+study1_brain_alignment/        # brain-geometry alignment -> syntactic generalization
+  experiment.py                # 4-condition fine-tune + BLiMP + CKA manipulation check
+                               #   + lambda sweep + layer ablation + TOST (multi-scale)
+  build_pereira.py             # build the fMRI alignment-target cache (login node)
+  build_pereira_noiseceiling.py# subject-split noise ceiling for the target
+  pretrained_blimp.py          # no-fine-tuning BLiMP anchor
+  run_slurm.sh                 # example SLURM launcher (edit the placeholders)
+study2_crosslingual_agreement/ # cross-lingual steering -> subject-verb agreement
+  experiment.py                # probe transfer + steering + confound-corrected leg C
+  run_slurm.sh
+requirements.txt
+```
+
+## Study 1 — brain-geometry alignment
+
+Fine-tunes Pythia (160M/410M/1.4B) on the Pereira et al. (2018) stimulus text with
+an auxiliary soft linear-CKA loss pulling a hidden layer toward the fMRI
+language-network target, under four matched conditions (LM-only, brain-aligned,
+shuffled, rank-matched random). Reports BLiMP, the end-of-training CKA
+manipulation check, a subject-split noise ceiling, a lambda sweep, a layer
+ablation, and TOST equivalence bounds.
+
+```bash
+# 1) one-time, on a machine WITH internet: build the fMRI target + noise ceiling
+pip install brainscore_language        # needs mpi4py (load it as a cluster module)
+python build_pereira.py --out cache/pereira_cache.npz
+python build_pereira_noiseceiling.py --out cache/noise_ceiling.json
+
+# 2) run an experiment (env vars point at the caches; offline-safe)
+export PEREIRA_NPZ=cache/pereira_cache.npz
+export NOISE_CEILING_JSON=cache/noise_ceiling.json
+export EXP_MODEL=EleutherAI/pythia-160m EXP_SEEDS=20   # headline
+python experiment.py                                    # writes results_<model>.json
+# scale-generality: EXP_MODEL=EleutherAI/pythia-410m EXP_SEEDS=8 EXP_MAIN_ONLY=1
+python pretrained_blimp.py                              # no-fine-tuning anchor
+```
+
+## Study 2 — cross-lingual steering
+
+Fits a linear subject-verb-agreement probe on the critical-verb residual stream
+of a multilingual model (default XGLM-1.7B) using MultiBLiMP, for the languages
+in the intersection of MultiBLiMP and the model's support. Regresses cross-lingual
+probe transfer and activation-steering benefit on URIEL/lang2vec syntactic
+distance, with a per-target random-direction baseline (confound) and a partial
+correlation controlling for probe transfer (the decisive control).
+
+```bash
+pip install lang2vec scikit-learn      # lang2vec bundles URIEL (offline)
+python experiment.py                   # writes results.json + figures/
+python experiment.py --sandbox         # fast synthetic self-test (no model/GPU)
+```
+
+## Data
+
+- **Pereira et al. (2018)** fMRI responses via the Brain-Score language package
+  (`brainscore_language`), language-network voxels; pooled across participants and
+  reduced to rank 128 by PCA. `build_pereira.py --inspect` prints the assembly
+  structure if coordinate names differ.
+- **BLiMP** (`nyu-mll/blimp`) and **MultiBLiMP** (`jumelet/multiblimp`) via the
+  HuggingFace `datasets` library.
+- **URIEL/lang2vec** syntactic features (`syntax_knn`), cosine distance.
+
+Compute-cluster note: compute nodes are assumed offline. Prefetch all models and
+datasets on a login node first; the scripts set HuggingFace offline flags and
+fail with an error if a required cache is missing.
+
+## Reproducibility
+
+All models load in fp32 for numerical stability. Every reported statistic is
+non-finite-guarded; a diverged run is surfaced as NaN, never coerced to 0. Random
+seeds are fixed and reported. See the paper appendices for exact hyperparameters.

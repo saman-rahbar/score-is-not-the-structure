@@ -1,0 +1,10 @@
+{
+  "method": "split-half over subjects; linear CKA in sentence space; 50 random splits; target = z-score + PCA-128 (matches the model's alignment target); RSA Spearman-Brown.",
+  "target_cka_ceiling": 0.540230356642723,
+  "raw_cka_ceiling": 0.11012022390991015,
+  "rsa_ceiling_spearman_brown": 0.17004682522811734,
+  "per_experiment": {
+    "Pereira2018.243sentences": {"n_subjects": 6, "n_sentences": 243, "n_voxels": 8031, "raw_split_half_cka_mean": 0.10900432213339255, "target_split_half_cka_mean": 0.6229318071704423, "rsa_spearman_brown": 0.18796876747980917},
+    "Pereira2018.384sentences": {"n_subjects": 9, "n_sentences": 384, "n_voxels": 12155, "raw_split_half_cka_mean": 0.1108263805028627, "target_split_half_cka_mean": 0.4878958449806506, "rsa_spearman_brown": 0.1587055961469686}
+  }
+}

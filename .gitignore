@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.npz
+*.json
+figures/
+.venv/
+hf_cache/
+cache/
+*.out
+
+!study1_brain_alignment/results/*.json
+!study2_crosslingual_agreement/results/*.json
