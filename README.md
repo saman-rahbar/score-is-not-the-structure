@@ -11,12 +11,14 @@ those controls.
 study1_brain_alignment/        # brain-geometry alignment -> syntactic generalization
   experiment.py                # 4-condition fine-tune + BLiMP + CKA manipulation check
                                #   + lambda sweep + layer ablation + TOST (multi-scale)
+  cka_decomposition.py         # brain-specific increment vs the broken-target controls
   build_pereira.py             # build the fMRI alignment-target cache (login node)
   build_pereira_noiseceiling.py# subject-split noise ceiling for the target
   pretrained_blimp.py          # no-fine-tuning BLiMP anchor
   run_slurm.sh                 # example SLURM launcher (edit the placeholders)
 study2_crosslingual_agreement/ # cross-lingual steering -> subject-verb agreement
   experiment.py                # probe transfer + steering + confound-corrected leg C
+  robustness.py                # language-level (Mantel) nulls + probe-validity subset
   run_slurm.sh
 requirements.txt
 ```
@@ -43,7 +45,15 @@ export EXP_MODEL=EleutherAI/pythia-160m EXP_SEEDS=20   # headline
 python experiment.py                                    # writes results_<model>.json
 # scale-generality: EXP_MODEL=EleutherAI/pythia-410m EXP_SEEDS=8 EXP_MAIN_ONLY=1
 python pretrained_blimp.py                              # no-fine-tuning anchor
+
+# 3) separate alignment-in-general from brain-specific structure (no GPU)
+python cka_decomposition.py --results-dir results
 ```
+
+The CKA the loss achieves is not by itself brain-specific, because the
+geometry-broken controls raise CKA toward the same target. `cka_decomposition.py`
+reports the increment over those controls with a paired sign-flip test, and the
+share of the brain-aligned CKA the broken targets already recover.
 
 ## Study 2 — cross-lingual steering
 
@@ -58,7 +68,15 @@ correlation controlling for probe transfer (the decisive control).
 pip install lang2vec scikit-learn      # lang2vec bundles URIEL (offline)
 python experiment.py                   # writes results.json + figures/
 python experiment.py --sandbox         # fast synthetic self-test (no model/GPU)
+python robustness.py                   # language-level nulls + probe subset (no GPU)
 ```
+
+The 272 ordered pairs come from 17 languages, each appearing in 32 of them, and
+URIEL distances are phylogenetically structured, so a pair-level permutation
+treats as independent what is not. `robustness.py` re-scores every leg against a
+language-label permutation instead, and repeats both legs on the languages whose
+within-language probe is above chance. It refuses to report anything until it
+re-derives the published point estimates from results.json.
 
 ## Data
 
