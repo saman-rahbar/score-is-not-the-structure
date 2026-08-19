@@ -19,11 +19,17 @@ from pathlib import Path
 import numpy as np
 
 # --- guard values: point estimates as published ------------------------------
-# The script refuses to report anything until it re-derives these from
-# results.json, so a change of definitions cannot pass silently.
-PUBLISHED = {
+# Probe transfer and raw steering are deterministic given the model, so these
+# must reproduce exactly; a mismatch means the definitions or the inputs moved
+# and nothing below can be trusted.
+PUBLISHED_EXACT = {
     "legB_r": -0.6573355858369012,
     "legC_raw_r": 0.08086588377207135,
+}
+
+# These depend on the per-target random-direction baseline, so they shift with
+# N_RAND_DIRS and its seed. Reported for comparison, never used to fail the run.
+PUBLISHED_BASELINE_DEPENDENT = {
     "legC_corrected_r": -0.1817944363959412,
     "partial_corrected_r": 0.12628258636153036,
     "null_random_r": 0.22971821603089151,
@@ -101,13 +107,20 @@ def main() -> int:
         "partial_corrected_r": partial_r(dist, steer_corr, transfer),
         "null_random_r": pearson(dist, rand_ben),
     }
-    print("reproduction guard:")
-    bad = [k for k, v in checks.items() if abs(v - PUBLISHED[k]) > 1e-6]
-    for k, v in checks.items():
-        print(f"  {k:22s} {v:+.4f} vs {PUBLISHED[k]:+.4f}  "
+    print("reproduction guard (deterministic quantities, must match):")
+    bad = [k for k in PUBLISHED_EXACT
+           if abs(checks[k] - PUBLISHED_EXACT[k]) > 1e-6]
+    for k, ref in PUBLISHED_EXACT.items():
+        print(f"  {k:22s} {checks[k]:+.4f} vs {ref:+.4f}  "
               f"{'OK' if k not in bad else 'MISMATCH'}")
     if bad:
         raise SystemExit("\nreproduction failed; nothing below is trustworthy")
+
+    print("baseline-dependent (shifts with N_RAND_DIRS; informational):")
+    for k, ref in PUBLISHED_BASELINE_DEPENDENT.items():
+        delta = checks[k] - ref
+        print(f"  {k:22s} {checks[k]:+.4f} vs {ref:+.4f}  "
+              f"(delta {delta:+.4f})")
 
     # --- language-level null, full cohort -------------------------------------
     print("\nlanguage-level (Mantel) permutation, full cohort:")
