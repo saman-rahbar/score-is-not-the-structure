@@ -42,8 +42,13 @@ CONFIG = {
     "probe_train_frac": 0.6,
     "steer_alphas": [4.0, 8.0],   # steering strengths (residual-norm-scaled)
     "steer_eval_pairs": 100,      # fixed eval subset per lang for margins
-    "n_rand_dirs": 5,             # random directions averaged for the per-target
-                                  # generic-susceptibility baseline (confound)
+    "n_rand_dirs": int(os.environ.get("N_RAND_DIRS", 20)),
+                                  # random directions averaged for the per-target
+                                  # generic-susceptibility baseline (confound).
+                                  # The corrected leg subtracts this per target,
+                                  # so a noisy baseline propagates into every
+                                  # corrected value; 20 keeps that noise well
+                                  # below the effect sizes being tested.
     "distance_metric": "syntactic",
     "n_perm": 5000,               # permutation-test resamples
 }
@@ -499,6 +504,48 @@ def run_experiment(langs, get_acts, get_steer, l2v, distances=None):
     rand_benefit = [R[b] for (a, b) in pair_keys]
     results["rand_benefit"] = rand_benefit
 
+    # --- Within-language manipulation check: does steering along a language's
+    #     OWN probe direction move its OWN margin more than a random direction
+    #     of the same magnitude? Leg C is a null about how the steering effect
+    #     varies with distance, and that null is uninterpretable if the
+    #     intervention does nothing anywhere. Self-pairs are skipped in the pair
+    #     loop above because their distance is zero, so this is computed here.
+    #     The direction is the full-data in-language probe, i.e. the most
+    #     favourable case: if steering fails to move the margin here, it has no
+    #     effect to grade by distance in the first place.
+    within_steer, within_corrected = {}, {}
+    for a in langs:
+        scaler_a, clf_a = full_probe[a]
+        dir_a = probe_direction(scaler_a, clf_a)
+        g = []
+        for alpha in CONFIG["steer_alphas"]:
+            s = get_steer(a, dir_a, alpha)
+            if np.isfinite(s) and np.isfinite(base_margin[a]):
+                g.append(s - base_margin[a])
+        within_steer[a] = float(np.mean(g)) if g else float("nan")
+        within_corrected[a] = within_steer[a] - R[a]
+    results["within_steer_benefit"] = within_steer
+    results["within_steer_corrected"] = within_corrected
+
+    vals = np.array([v for v in within_corrected.values() if np.isfinite(v)])
+    if len(vals):
+        srng = np.random.RandomState(11)
+        null = (srng.choice([-1.0, 1.0], size=(20000, len(vals))) *
+                vals).mean(axis=1)
+        results["within_steer_corrected_mean"] = float(vals.mean())
+        results["within_steer_corrected_p"] = float(
+            (np.abs(null) >= abs(vals.mean()) - 1e-15).mean())
+        results["within_steer_n_positive"] = int((vals > 0).sum())
+        results["within_steer_n"] = int(len(vals))
+        # The intervention is only demonstrated to do something if its own
+        # direction beats a random one in-language.
+        results["within_steer_works"] = bool(
+            vals.mean() > 0 and results["within_steer_corrected_p"] < 0.05)
+    else:
+        results["within_steer_corrected_mean"] = float("nan")
+        results["within_steer_corrected_p"] = float("nan")
+        results["within_steer_works"] = False
+
     # --- NULL: generic (random-direction) susceptibility ~ distance. If this
     #     is > 0 (some languages more perturbable by any direction) it confounds
     #     the raw steering test, motivating the contrast below.
@@ -714,13 +761,27 @@ def main_sandbox():
           f"p={results['legC_corrected_vs_distance_p']:.3g}  "
           f"partial p={results['control_corrected_partial_p']:.3g}  "
           f"survives={results['legC_corrected_survives']}")
+    print(f"  within-language steering (manipulation check): "
+          f"mean corrected = {results['within_steer_corrected_mean']:.3f} "
+          f"p={results['within_steer_corrected_p']:.3g}  "
+          f"{results['within_steer_n_positive']}/{results['within_steer_n']} "
+          f"positive  works={results['within_steer_works']}")
+    print(f"    (the sign test floors at "
+          f"{2.0 ** (1 - results['within_steer_n']):.3g} with "
+          f"{results['within_steer_n']} sandbox languages, so works=False here "
+          f"reflects the language count, not the effect)")
     # assertions: pipeline must recover the planted structure & finite stats
     ok = (results["n_pairs"] == 20
           and results["legB_transfer_vs_distance_r"] < 0
           and results["legC_steering_vs_distance_r"] < 0
           and np.isfinite(results["control_partial_p"])
           and np.isfinite(results["legC_corrected_vs_distance_r"])
-          and np.isfinite(results["control_corrected_partial_p"]))
+          and np.isfinite(results["control_corrected_partial_p"])
+          # the synthetic generator plants a real in-language steering effect,
+          # so the manipulation check must detect it; if it cannot, the check
+          # is not sensitive enough to license a null on the real data
+          and results["within_steer_n"] == len(results["languages"])
+          and np.isfinite(results["within_steer_corrected_mean"]))
     make_figures(results)  # exercise the plotting path too
     print("SANDBOX", "PASS" if ok else "FAIL")
     return 0 if ok else 1
