@@ -10,3 +10,6 @@ cache/
 
 !study1_brain_alignment/results/*.json
 !study2_crosslingual_agreement/results/*.json
+
+# local de-anonymized working copy, never commit (references paper 1)
+study2_crosslingual_agreement/paper2_experiment_narval.py
