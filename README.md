@@ -1,15 +1,22 @@
-# Aligned but Inert: Representational Correspondence Does Not Imply Causal Utility
+# Most of a Correspondence Score Survives Removing the Correspondence
 
-Reproduction code for the two controlled studies in the paper. Both studies test
-whether a representational correspondence that *provably exists* confers a causal
-or downstream benefit, using the same template: a manipulation/existence check
-that the correspondence is real and captured, matched controls that hold nuisance
-factors fixed, and a decision rule that attributes a benefit only if it beats
-those controls.
+Reproduction code for the two studies in the paper. Both audit a widely used
+correspondence measure by asking what it reads when the structure it is meant to
+detect is removed, or cannot be measured reliably in the first place, and then
+ask whether what survives the audit does any functional work.
+
+The audit has three parts. A **content ablation** rebuilds the reference with its
+correspondence destroyed but every nuisance property intact, so the score can be
+split into content and form. An **instrument check** asks whether the score is
+estimated with comparable reliability everywhere it is compared. An **inference
+check** counts the independent units rather than the observations. Study 1 finds
+the ablation decisive (geometry-broken targets recover most of a brain-alignment
+score); Study 2 finds the instrument decisive (probe reliability declines along
+the same axis as the predictor) and the unit count consequential.
 
 ```
 study1_brain_alignment/        # brain-geometry alignment -> syntactic generalization
-  experiment.py                # 4-condition fine-tune + BLiMP + CKA manipulation check
+  experiment.py                # 4-condition fine-tune + BLiMP + CKA content ablation
                                #   + lambda sweep + layer ablation + TOST (multi-scale)
   cka_decomposition.py         # brain-specific increment vs the broken-target controls
   build_pereira.py             # build the fMRI alignment-target cache (login node)
@@ -30,7 +37,7 @@ Fine-tunes Pythia (160M/410M/1.4B) on the Pereira et al. (2018) stimulus text wi
 an auxiliary soft linear-CKA loss pulling a hidden layer toward the fMRI
 language-network target, under four matched conditions (LM-only, brain-aligned,
 shuffled, rank-matched random). Reports BLiMP, the end-of-training CKA
-manipulation check, a subject-split noise ceiling, a lambda sweep, a layer
+content ablation, a subject-split noise ceiling, a lambda sweep, a layer
 ablation, and TOST equivalence bounds.
 
 ```bash
