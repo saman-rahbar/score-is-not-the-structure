@@ -19,6 +19,7 @@ study1_brain_alignment/        # brain-geometry alignment -> syntactic generaliz
 study2_crosslingual_agreement/ # cross-lingual steering -> subject-verb agreement
   experiment.py                # probe transfer + steering + confound-corrected leg C
   robustness.py                # language-level (Mantel) nulls + probe-validity subset
+  data_volume_check.py         # rules out training-set size behind the failed probes
   run_slurm.sh
 requirements.txt
 ```
