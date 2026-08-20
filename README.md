@@ -9,10 +9,10 @@ The audit has three parts. A **content ablation** rebuilds the reference with it
 correspondence destroyed but every nuisance property intact, so the score can be
 split into content and form. An **instrument check** asks whether the score is
 estimated with comparable reliability everywhere it is compared. An **inference
-check** counts the independent units rather than the observations. Study 1 finds
-the ablation decisive (geometry-broken targets recover most of a brain-alignment
-score); Study 2 finds the instrument decisive (probe reliability declines along
-the same axis as the predictor) and the unit count consequential.
+check** counts the independent units rather than the observations. Study 1, the cross-lingual study, finds the instrument decisive (probe
+reliability declines along the same axis as the predictor) and the unit count
+consequential. Study 2, the brain-alignment study, finds the ablation decisive:
+geometry-broken targets recover most of the score.
 
 ```
 make_figures.py                # regenerates both paper figures from the stored results
@@ -34,7 +34,7 @@ study2_crosslingual_agreement/ # cross-lingual steering -> subject-verb agreemen
 requirements.txt
 ```
 
-## Study 1 — brain-geometry alignment
+## Study 2 — brain-geometry alignment
 
 Fine-tunes Pythia (160M/410M/1.4B) on the Pereira et al. (2018) stimulus text with
 an auxiliary soft linear-CKA loss pulling a hidden layer toward the fMRI
@@ -83,13 +83,15 @@ The floor is set by the target's rank. Sweeping `--rank` gives 0.0505, 0.1019,
 0.2040 and 0.4088 at ranks 32, 64, 128 and 256, against k/n of 0.0510, 0.1021,
 0.2041 and 0.4083 for n = 627 sentences: two rank-k representations of the same
 n samples overlap by about k/n whether or not either carries the reference
-structure. Any study scoring CKA against a rank-reduced target can compute its
-own floor from two integers. It imports the
-target construction, the shuffle and the random draw from the experiment module
-so the numbers use identical code to the runs, and self-tests its numpy CKA
-against the torch objective the experiment optimizes.
+structure. We verified this at four ranks on one target, so it is a measured
+regularity of this construction rather than a proven identity, and a reason to
+check the floor for whatever rank and sample count you use.
 
-## Study 2 — cross-lingual transfer and steering
+`cka_floor.py` imports the target construction, the shuffle and the random draw
+from the experiment module so the numbers use identical code to the runs, and
+self-tests its numpy CKA against the torch objective the experiment optimizes.
+
+## Study 1 — cross-lingual transfer and steering
 
 Fits a linear subject-verb-agreement probe on the critical-verb residual stream
 of a multilingual model (default XGLM-1.7B) using MultiBLiMP, for the languages
@@ -101,8 +103,8 @@ correlation controlling for probe transfer.
 The transfer gradient replicates (r = -0.66), but the instrument degrades along
 the axis under study: within-language probe accuracy falls with a language's mean
 typological distance to the rest of the sample (r = -0.74) and sits at or below
-chance in four of the seventeen, so a third of the transfer estimates are read off
-probes that do not work. Excluding those four halves the explained variance, but
+chance in four of the seventeen, so 64 of the 272 transfer estimates are read off
+a probe that does not work and 116 involve at least one such language. Excluding those four halves the explained variance, but
 they are also the four most distant, so the exclusion restricts the predictor's
 range as well and the two cannot be separated in this sample. The units are also
 miscounted by a pair-level null: the corrected steering leg is strongly
