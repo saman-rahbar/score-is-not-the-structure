@@ -76,7 +76,14 @@ marginals and no correspondence to the true one already sits at CKA 0.204
 any model does. Since a model trained on an ablated target reaches 0.31, above
 the 0.20 its own target sits at, the ablated conditions are not merely inheriting
 their target's similarity: the alignment objective moves any model toward the
-true target's geometry whether or not the target carries it. It imports the
+true target's geometry whether or not the target carries it.
+
+The floor is set by the target's rank. Sweeping `--rank` gives 0.0505, 0.1019,
+0.2040 and 0.4088 at ranks 32, 64, 128 and 256, against k/n of 0.0510, 0.1021,
+0.2041 and 0.4083 for n = 627 sentences: two rank-k representations of the same
+n samples overlap by about k/n whether or not either carries the reference
+structure. Any study scoring CKA against a rank-reduced target can compute its
+own floor from two integers. It imports the
 target construction, the shuffle and the random draw from the experiment module
 so the numbers use identical code to the runs, and self-tests its numpy CKA
 against the torch objective the experiment optimizes.
