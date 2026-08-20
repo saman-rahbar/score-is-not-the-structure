@@ -28,6 +28,7 @@ study2_crosslingual_agreement/ # cross-lingual steering -> subject-verb agreemen
   experiment.py                # probe transfer + steering + confound-corrected leg C
   robustness.py                # language-level (Mantel) nulls + probe-validity subset
   data_volume_check.py         # rules out training-set size behind the failed probes
+  range_restriction.py         # tests whether the attenuation is range restriction, not validity
   run_slurm.sh
 requirements.txt
 ```
