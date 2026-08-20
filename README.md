@@ -97,7 +97,16 @@ chance in four of the seventeen, so a third of the transfer estimates are read o
 probes that do not work. Excluding those four halves the explained variance, but
 they are also the four most distant, so the exclusion restricts the predictor's
 range as well and the two cannot be separated in this sample. The units are also
-miscounted by a pair-level null.
+miscounted by a pair-level null: the corrected steering leg is strongly
+significant scored over the 272 pairs (p = 0.0006) and null scored over the 17
+languages (p = 0.155).
+
+The steering intervention itself is shown to work before its variation is tested.
+The 272 ordered pairs exclude self-pairs, so no language was ever steered along
+its own direction; adding that condition, steering moves the grammatical-
+preference margin by +6.21 over a random direction of equal magnitude, positive
+in 16 of 17 languages (sign-flip p <= 5e-05). The distance-graded null is
+therefore informative and not merely empty.
 
 ```bash
 pip install lang2vec scikit-learn      # lang2vec bundles URIEL (offline)
