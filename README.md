@@ -15,6 +15,7 @@ score); Study 2 finds the instrument decisive (probe reliability declines along
 the same axis as the predictor) and the unit count consequential.
 
 ```
+make_figures.py                # regenerates both paper figures from the stored results
 study1_brain_alignment/        # brain-geometry alignment -> syntactic generalization
   experiment.py                # 4-condition fine-tune + BLiMP + CKA content ablation
                                #   + lambda sweep + layer ablation + TOST (multi-scale)
@@ -149,6 +150,17 @@ three of the four attenuate at least as much; no distance-matched exclusion exis
 in this sample. The restricted correlation is therefore reported as what the
 gradient becomes once unmeasurable languages are removed, and not as an estimate
 of how much of it the instrument contributed.
+
+## Figures
+
+```bash
+REPO_ROOT=. python make_figures.py     # writes figures/ (no GPU, no model)
+```
+
+Regenerates both figures in the paper from the committed results: the CKA
+decomposition by condition and scale against the reliability ceiling, and the
+probe-reliability panel. Paths come from `REPO_ROOT` and `FIG_OUT`, defaulting to
+the repository root.
 
 ## Data
 
