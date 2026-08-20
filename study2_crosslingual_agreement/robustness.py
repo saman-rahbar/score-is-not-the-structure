@@ -152,6 +152,24 @@ def main() -> int:
                         args.draws)
         print(f"    {name:20s} r = {r:+.4f}   p = {p:.4f}")
 
+    # --- does cross-lingual steering do anything at all? ----------------------
+    # The within-language manipulation check uses self-pairs, but the
+    # distance-graded null concerns cross-pairs, so the intervention has to be
+    # shown to work across languages too, not only within one.
+    sb = np.array(d["steer_benefit"], float)
+    rb = np.array(d["rand_benefit"], float)
+    adv = sb - rb
+    per_src = np.array([adv[src == l].mean() for l in langs])
+    rng2 = np.random.default_rng(0)
+    null = (rng2.choice([-1.0, 1.0], size=(20000, len(per_src))) *
+            per_src).mean(axis=1)
+    p_cross = float((np.abs(null) >= abs(per_src.mean()) - 1e-15).mean())
+    print(f"\ncross-lingual steering vs the random baseline:")
+    print(f"  mean advantage {adv.mean():+.3f} nats over {len(adv)} pairs, "
+          f"beating random on {(adv > 0).sum()}")
+    print(f"  per-source-language mean {per_src.mean():+.3f}, "
+          f"{(per_src > 0).sum()}/{len(langs)} positive, sign-flip p = {p_cross:.4f}")
+
     wvals = list(within.values())
     print(f"\nwithin-language probe accuracy: mean {np.mean(wvals):.3f}, "
           f"range {min(wvals):.3f} to {max(wvals):.3f}")

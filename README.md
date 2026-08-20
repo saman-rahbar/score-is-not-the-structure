@@ -116,6 +116,11 @@ preference margin by +6.21 over a random direction of equal magnitude, positive
 in 16 of 17 languages (sign-flip p <= 5e-05). The distance-graded null is
 therefore informative and not merely empty.
 
+Cross-lingual steering works too, which is what that null actually concerns:
+pooled over all 272 ordered pairs, steering B by A's direction beats the
+per-target random baseline by +2.85 nats, on 223 of the pairs, with all 17
+source languages positive (sign-flip p = 1e-4). `robustness.py` reports this.
+
 ```bash
 pip install lang2vec scikit-learn      # lang2vec bundles URIEL (offline)
 python experiment.py                   # writes results.json + figures/
