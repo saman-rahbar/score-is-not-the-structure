@@ -19,6 +19,7 @@ study1_brain_alignment/        # brain-geometry alignment -> syntactic generaliz
   experiment.py                # 4-condition fine-tune + BLiMP + CKA content ablation
                                #   + lambda sweep + layer ablation + TOST (multi-scale)
   cka_decomposition.py         # brain-specific increment vs the broken-target controls
+  cka_floor.py                 # what CKA reads between targets with no correspondence
   build_pereira.py             # build the fMRI alignment-target cache (login node)
   build_pereira_noiseceiling.py# subject-split noise ceiling for the target
   pretrained_blimp.py          # no-fine-tuning BLiMP anchor
