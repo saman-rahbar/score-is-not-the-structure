@@ -90,13 +90,14 @@ probe transfer and activation-steering benefit on URIEL/lang2vec syntactic
 distance, with a per-target random-direction baseline (confound) and a partial
 correlation controlling for probe transfer.
 
-The transfer gradient replicates (r = -0.66), but two checks bound what it means.
-The instrument itself degrades along the axis under study: within-language probe
-accuracy falls with a language's mean typological distance to the rest of the
-sample (r = -0.74) and sits at or below chance in four of the seventeen, and
-restricting to the languages where the probe works halves the explained variance.
-The units are also miscounted by a pair-level null. `robustness.py` and
-`data_volume_check.py` below carry both.
+The transfer gradient replicates (r = -0.66), but the instrument degrades along
+the axis under study: within-language probe accuracy falls with a language's mean
+typological distance to the rest of the sample (r = -0.74) and sits at or below
+chance in four of the seventeen, so a third of the transfer estimates are read off
+probes that do not work. Excluding those four halves the explained variance, but
+they are also the four most distant, so the exclusion restricts the predictor's
+range as well and the two cannot be separated in this sample. The units are also
+miscounted by a pair-level null.
 
 ```bash
 pip install lang2vec scikit-learn      # lang2vec bundles URIEL (offline)
@@ -104,6 +105,7 @@ python experiment.py                   # writes results.json + figures/
 python experiment.py --sandbox         # fast synthetic self-test (no model/GPU)
 python robustness.py                   # language-level nulls + probe subset (no GPU)
 python data_volume_check.py            # rules out training size (no GPU)
+python range_restriction.py            # range restriction vs probe validity (no GPU)
 ```
 
 The 272 ordered pairs come from 17 languages, each appearing in 32 of them, and
@@ -121,6 +123,16 @@ on 163; within-language accuracy is uncorrelated with the amount actually used
 (r = -0.04); and Basque, with the least data of any language, outscores all four
 failures. Pair counts are recorded in the file, and `--show-source` prints the
 command that regenerates them from the MultiBLiMP cache.
+
+`range_restriction.py` reports the check that does *not* come out in our favour.
+The four chance-level languages are also the four most typologically distant, so
+dropping them truncates the predictor and attenuates the correlation whatever the
+probes were doing. Conditioning the exclusion null on the removed set's summed
+mean distance leaves only four comparison sets as extreme as the invalid one, and
+three of the four attenuate at least as much; no distance-matched exclusion exists
+in this sample. The restricted correlation is therefore reported as what the
+gradient becomes once unmeasurable languages are removed, and not as an estimate
+of how much of it the instrument contributed.
 
 ## Data
 
