@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=study1
+#SBATCH --job-name=brain_alignment
 #SBATCH --account=YOUR_ACCOUNT
 #SBATCH --gres=gpu:a100:1
 #SBATCH --cpus-per-task=4

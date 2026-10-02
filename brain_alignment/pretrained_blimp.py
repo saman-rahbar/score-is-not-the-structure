@@ -5,7 +5,7 @@ fine-tuning) on the same 8 BLiMP paradigms, so we can show whether six epochs on
 'floor-effect' reviewer question). Eval only -- no training. Reuses the loaders
 and scorer from experiment_full so the protocol is identical.
 
-Run on Narval (offline caches populated):  python pretrained_blimp.py
+Run on a compute node with the caches already populated:  python pretrained_blimp.py
 Writes pretrained_blimp.json next to it."""
 import os
 import json

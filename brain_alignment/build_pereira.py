@@ -9,7 +9,7 @@ Produce the pereira_cache.npz that experiment_full.py expects:
 Source: Pereira et al. (2018), via the Brain-Score language package, which
 ships the assembly with language-network responses already extracted.
 
-Usage (Narval LOGIN node, internet available):
+Usage (a cluster login node with internet access):
   pip install brainscore_language
   # 1) verify structure first (no file written):
   python build_pereira.py --inspect

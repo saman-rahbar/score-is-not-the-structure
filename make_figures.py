@@ -20,8 +20,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 REPO = Path(os.environ.get("REPO_ROOT", Path(__file__).resolve().parent))
-S1 = REPO / "study1_brain_alignment/results"
-S2 = REPO / "study2_crosslingual_agreement/results/results.json"
+S1 = REPO / "brain_alignment/results"
+S2 = REPO / "crosslingual_agreement/results/results.json"
 OUT = Path(os.environ.get("FIG_OUT", REPO / "figures"))
 OUT.mkdir(parents=True, exist_ok=True)
 

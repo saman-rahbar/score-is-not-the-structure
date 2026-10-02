@@ -20,7 +20,7 @@ target; comparing that to this ceiling tells the reader whether the target
 carried substantial reliable signal that the model partly captured (a strong,
 interpretable null) or whether the target was too noisy to matter.
 
-Usage (Narval LOGIN node):
+Usage (a cluster login node with internet access):
   pip install brainscore_language
   python build_pereira_noiseceiling.py --inspect        # check subject coord
   python build_pereira_noiseceiling.py \

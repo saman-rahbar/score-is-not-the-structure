@@ -1,4 +1,4 @@
-"""Robustness checks for the Study 2 correlations: phylogenetic
+"""Robustness checks for the cross-lingual correlations: phylogenetic
 non-independence, and probe validity.
 
 Re-scores every leg against a language-label permutation (Mantel) instead of a

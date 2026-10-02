@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the paper below."
+title: "The Score Is Not the Structure: code"
+authors:
+  - family-names: Rahbar
+    given-names: Saman
+    affiliation: "Independent researcher"
+year: 2026
+repository-code: "https://github.com/saman-rahbar/score-is-not-the-structure"
+license: MIT
+type: software
+preferred-citation:
+  type: conference-paper
+  title: "The Score Is Not the Structure: Brain Alignment and Cross-Lingual Transfer"
+  authors:
+    - family-names: Rahbar
+      given-names: Saman
+  year: 2026
+  collection-title: "NeurIPS 2026 Workshop on Linguistic Principles for Foundation Models (LP4FM)"

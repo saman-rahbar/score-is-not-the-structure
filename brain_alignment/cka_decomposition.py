@@ -1,4 +1,4 @@
-"""Separates alignment-in-general from brain-specific structure in the Study 1
+"""Separates alignment-in-general from brain-specific structure in the brain-alignment
 manipulation check.
 
 The brain-aligned CKA to the fMRI target is not by itself the quantity the
