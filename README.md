@@ -96,7 +96,7 @@ cd score-is-not-the-structure
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-make check     # all CPU checks: robustness, probe validity, range restriction, CKA decomposition and floor
+make check     # all CPU checks: robustness, probe validity, range restriction, bootstrap, CKA decomposition and floor
 make figures   # both paper figures, written to figures/
 ```
 
@@ -119,6 +119,7 @@ python experiment.py             # full run on a GPU; writes results.json
 python robustness.py             # language-level permutation tests, probe-validity subset
 python data_volume_check.py      # rules out training-set size behind the failed probes
 python range_restriction.py      # range restriction against probe validity
+python language_bootstrap.py     # confidence intervals with languages as the units
 ```
 
 `range_restriction.py` reports the check that does not come out in our favour.
@@ -182,6 +183,7 @@ crosslingual_agreement/
   robustness.py              language-level permutation tests, probe-validity subset
   data_volume_check.py       training-set size against probe failure
   range_restriction.py       range restriction against probe validity
+  language_bootstrap.py      confidence intervals that resample languages, not pairs
   results/results.json       all 272 pairs, distances and per-language accuracies
 brain_alignment/
   experiment.py              four-condition fine-tuning, BLiMP, CKA, sweeps

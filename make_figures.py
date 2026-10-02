@@ -18,6 +18,7 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42})   # embed TrueType, not Type 3
 
 REPO = Path(os.environ.get("REPO_ROOT", Path(__file__).resolve().parent))
 S1 = REPO / "brain_alignment/results"
